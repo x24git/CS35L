@@ -1,0 +1,140 @@
+// Christopher Makarem
+// CS35L - Lab2
+// 904437729
+
+1.) "man -k" is used to print all commands that have a specific word in their man
+page. The -k option followed by the search term will return all commands.
+
+2.) cp is located at: /usr/local/cs/bin/cp
+wc is located at:/user/local/cs/bin/wc
+The shell command used to locate these functions was the "which" command.
+
+3.) There are 3 executable programs that are just one character long they are:
+[  : Allows for the evaluation of conditional expressions
+w  : Shows who is logged on and what they are doing
+X  : a symbolic link to the command xorg which is a display server for the X
+Window System
+
+The Command used for to return these list of executables was "find /usr/bin
+-executable - name ?"
+
+4.) Emacs in the location /usr/bin is a symbolic link to /etc/alternatives/emacs
+
+There are two ways of using the shell to get where the symbolic link points to:
+"ls emacs -l" and "readlink emacs"
+
+5.) By examining the manual for chmod we know that g means that users in the
+file's group will be changed, the + means we are adding permissions and the s
+means that we are setting the group ID to the directory/file that we are
+targeting with the CHMOD command. The o-x command removes execution permission
+for users not in the file's group.
+The command that assisted me in finding these answers was "man chmod"
+
+6.)The command "find -mtime" allows us to search for files modified in the past
+3 weeks. Since the value associated to mtime is days, the full command will be
+"find -mtime 21". (Shell command used: man find)
+
+7.)The command to find all directories modified in the past 3 weeks is "find /
+-mtime 21 -d" where / instructs find to start at the root, and -d returns only
+directories. (Shell command used: man find)
+
+8.) The command used to return the number of symbolic links in the same
+directory as find  is "find /usr/bin -type l | wc". The result of this is 246
+symbolic links. This works because "find -type l" returns all the symbolic links
+in the directory and their full paths. We then pipe the output of that process
+to the text processing tool "wc" which analyses the incoming stream and returns
+the number of lines (each line is a new symbolic link).
+(Shell commands used: man find, which find)
+
+9.) The ls command has a built-in sort feature for modified time denoted by the
+-t option. Thus by running the command "ls /usr/lib -lt returns all the objects
+in that director sorted with oldest at the bottom. We must also note if the
+object is a file, directory or link. (regular files have a "-" as the first
+character on their line. Thus the oldest modified file in the /usr/lib directory
+is "libgrp-error.so.0.10.0" (Shell command used: man ls)
+
+10.)The locale command gathers its information from a local archive and
+definition location. The default archive location is
+"/usr/lib/locale/locale-archive" and the definition files are located at
+"/usr/share/i18n/locales". These locations were explained in the man page for
+locale (Shell command used: man locale)
+
+11.)Using C-h a we can search the emacs manual for commands whose name matches a
+given patern. In this case sort. (I used the emacs manual C-h to determine what
+key command to use to search for commands)
+The commands that have have sort in their name:
+Buffer-menu-sort
+sort-columns
+sort-fields
+sort-lines
+sort-numeric-fields
+sort-pages
+sort-paragraphs
+sort-regexp-fields
+tabulated-list-col-sort
+tabulated-list-sort
+
+12.)The way to determine what any key commands do in Emacs is the use C-h b and
+then searching the list of commands using C-s and typing in the search term.
+The following are the commands C-M-a to C-M-h:
+C-M-a (beginnig-of-defun): Move to the bginning of the current or preceding
+defun(definition)
+C-M-b (backward-sexp): Move backward over a balanced expression
+C-M-c (exit-recursive-edit) Exits the recursive edit to return to an unfinished
+command
+C-M-d (down-list): Move forward down one level of parentheses
+C-M-e (end-of-defun): Move forward to the next end of defun (definition)
+C-M-f (forward-sexp): Move forward across one balanced expression
+C-M-g (no command)
+C-M-h (mark-defun): Put mark at the end of this defun, point at beginning.
+
+13.)Using the command C-h b to pull up the manual listing for commands, and then
+searching the manual using C-s for C-g I used the arrow keys to select the
+command and enter the page describing what the command does
+This command signals a quit condition during the execution of Lisp code. Meaning
+that when Lisp code is executing, this character will cause the code to quit
+directly.
+
+14.) Using the same commands as above (C-h b then C-s followed by yank) I pulled
+up the documentations for yank. Yank reinsets the last stretch of killed text
+(or copied text). It is essentially a paste command.
+
+15.)Using the emacs command M-x dired /usr/bin and the shell command "ls
+/usr/bin -l" I got the output from both of these methods. Both seem to print out
+the same information about each file. The only noticable difference between the
+two was that dired also lists information about the current and parent
+directory, while ls only shows the objects in the current directory and does not
+list information about the current or parent directories. 
+
+
+
+
+Exercise/Homework
+============================
+1.4)
+7 instances were reported as being replaced
+
+1.6)
+
+The result of this evaluation is 212056870752138807 which is
+the arithmatically correct answer. It seems that we would need to have the
+evaluator in EMACS have an integer overflow to create an irregularity in the
+calculation. However, the randomly generated numbers are not large enough to
+exceed this limit. (I tested with manually entering values and indeed got a
+integer overflow).  M-: ( - SP x SP y ) enter This evaluation is differnt from
+the C-j method in that in shows the hexadecimal and octadecimal values of the
+base10 number.This function does not prevent an integer overflow however.
+
+The random number generator is not random in the mathematical sense because as
+seen by the integer overflow, the generation of these random numbers is
+constrained by the number of bits avalibale to represent the numbers. Secondly,
+I noticed that when restarting emacs, the same sequence of numbers is returned
+by the random number generator meaning that the numbers are not random but the
+result of a seed set by the hardware and are completely reproducable.  If the
+numbers were indeed truly random, then there would be nearly a 100% chance of
+arithmatic error. This is because there is a finite quntity of numbers that will
+not cause a integer overflow, but an infinite quantity of numbers that will. The
+limit of infinity over a number is infinity. This also proves that our random
+number generator in emacs is not truly random, since the percentage of us
+getting an arithmetic error was not anywhere close to 100%
+

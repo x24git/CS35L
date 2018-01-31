@@ -1,0 +1,58 @@
+1)
+Brady removed "case_long_iso_time_style:" because this is a label used for a
+goto command that was removed as part of his fix. Although unnecessary to remove
+an unused goto lable, it does provide for cleaner code that does not have left
+over parts that are unused. Additionally it may be confusing to note that in the
+line above there is a similar looking command "case long_iso_time_sytle:",
+however this is part of a switch statement and the goto label was written in a
+similar style so as to have consistency in labeling that section of code. They
+are, however totally seperate instructions that perform different tasks and are
+not interchangeable.
+
+2)
+We should be aware that the original code for ls had code that handeled a
+situation where the system locale did not have a specific format translate, like
+the en_* locales and thus translated the time to ISO standard time
+format. Brady's patch simply removed this check and instead of defaulting to ISO
+if a translation is not avaliable, ls will default to a POSIX representation
+which displays the date with English abbreviated months and an American style
+Month Day Year format. This poses a problem for other languages that do not have
+a specific time tranlation, but are not American English speakers. The POSIX
+representation in Brady's code can be overridden back to ISO with the
+--time-style='long_iso_time_sytle' flag, however if a user will reguarly be
+having to use this flag, it would be best to simply not apply Brady's patch and
+just run with the original ls function that defaulted to ISO long time format.
+
+3)
+The randline.py chooses a random line from a text file and outputs it's value,
+the issue with this command is that when we try to invoke the script on an empty
+file /dev/null, the script will try to chooose a radom line from a file with 0
+lines. This is undefined behavior by the random function and as such indicates
+the sequence of lines is empty (an error condition) and as a result the index of
+the array is out of range.
+See Error:
+
+Traceback (most recent call last):
+  File "randline.py", line 70, in <module>
+      main()
+        File "randline.py", line 64, in main
+	    sys.stdout.write(generator.chooseline())
+	      File "randline.py", line 34, in chooseline
+	          return random.choice(self.lines)
+		    File "/usr/local/cs/Python-2.7.9/lib/python2.7/random.py",
+  line 275, in choice
+      return seq[int(self.random() * len(seq))]  # raises IndexError if seq is
+  empty
+  IndexError: list index out of range
+
+
+4)
+Python 3 no longed allows you to iterate over paratmeters passed to the
+exception. In order to properly handel errors in python3 you must pass the IO
+error to a variable and then examine this for the attributes we want (errno,
+errstr). Something such as the following would be correct syntax in both python2
+and python3 (since technically the original code wasn't explicitly supported in
+python2 either)
+
+except IOError as e:
+   errno, strerror = e.args

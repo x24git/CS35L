@@ -1,0 +1,77 @@
+// Christopher Makarem
+// CS35L - Lab 2
+// 904437729
+
+
+SETUP =======================
+w g e t SP
+https://web.cs.ucla.edu/classes/winter18/cs35L/assign/assign1.html (used paste
+function in putty for the url, so I right clicked) enter c p SP a s s i g n 1 . h
+t m l SP e x e r 1 . h t m l enter ^ backspace backspace backspace backspace
+backspace backspace 2 . h t m l enter ^ backspace backspace backspace backspace
+backspace backspace 3 . h t m l enter
+
+
+Exercise 1.1 =======================
+C-s H T M L enter C-s s c a v e n g e r
+enter C-s s e l f - r e f e r e n t i a l
+enter C-s a r r o w
+enter C-e C-a C-x
+C-c y
+
+Exercise 1.2 ======================
+M-g M-g 18 enter
+M-h C-w C-s C-s M-h C-w
+C-s C-s M-h C-w
+C-s C-s rarrow rarrow rarrow C-space C-r < enter C-w
+C-s C-s ! - - C-a C-space M-} M-} C-w
+C-s C-s C-a C-space C-e C-w
+C-x C-c y
+
+Exercise 1.3 =====================
+M-% A s s i g n m e n t SP 1 enter
+A s s i g n m e n t SP 51 enter y y q
+M-< M-% U T F - 8 enter U S - A S C I I enter y q
+M-< C-s </o enter C-e C-o C-s C-c y U T F - 8 y e s enter (encoding remains the
+same despite the change we made to the file)
+
+Exercise 1.4 ====================
+M-> C-r - < enter rarrow C-space C-e M-w C-r </ h t C-r
+enter C-e enter C-y
+M-> C-r - < ! C-r enter C-s + larrow M-w C-r o n l y C-r darrow C-y uarrow C-d
+uarrow C-d uarrow C-d uarrow C-d
+M-> C-r - - - - larrow larrow C-space C-s > M-w C-r l i n e C-r C-r C-s rarrow
+C-y
+M-> C-r - < ! C-r C-r M-h M-w C-r S u b C-r uarrow C-y uarrow C-d uarrow C-d
+uarrow C-d uarrow
+C-d M-> C-r - < ! C-r C-r C-r rarrow C-space C-e M-w C-r L e a C-r darrow C-y
+M-> C-r - < ! C-r C-r C-r C-r M-h M-w C-r h u n t C-r darrow C-y uarrow C-d
+uarrow uarrow uarrow C-d
+M-> C-r - - - C-r C-r C-space M-> C-w C-x-u - - > C-r
+C-r C-r C-r C-a < ! - -
+M-< M-% < o l > enter < o L > enter !  C-x C-c y
+
+Exercise 1.5 =======================
+m k d i r SP j u n k enter c d SP j u n k
+enter
+e m a c s SP h e l l o . c
+enter M-x c o m p i l e C-a C-k g c c SP - o SP
+h e l l o SP h e l l o . c
+C-x b h e l l o - o u t C-u M-! . / h e l l o
+
+#include <stdio.h> int main (void) { char n = '\n'; char b = '\\'; char q = '"';
+char const *p = "#include <stdio.h>%cint%cmain (void)%c{%c char n = '%cn';%c
+char b = '%c%c';%c char q = '%c';%c char const *p = %c%s%c;%c printf (p, n, n,
+n, n, b, n, b, b, n, q, n, q, p, q, n, n, n, n);%c return 0;%c}%c"; printf (p,
+n, n, n, n, b, n, b, b, n, q, n, q, p, q, n, n, n, n); return 0; }
+
+C-space M-> M-w C-x C-f backspace backspace backspace backspace
+C S 3 5 L / l a b 1 / k e y 1 . t x t
+M-> C-y
+
+Exercise 1.6 =======================
+C-x b enter
+( r a n d o m ) C-j
+( s e t q SP x SP ( r a n d o m ) ) C-j
+( s e t q SP y SP ( r a n d o m ) ) C-j
+( - SP x SP y) C-j

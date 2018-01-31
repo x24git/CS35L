@@ -1,0 +1,9 @@
+#!/bin/bash
+
+sed -n '/<table/,/<\/table>/p' |
+sed '/<tr>/,/<\/td>/d' | 
+sed 's/<[^>]*>//g;s/^[ \n]*//g;s/, /\n/g' |
+tr -s '\r\n,' '\n' |
+tr "[:upper:]\`" "[:lower:]\'" | 
+sed  "/[^pk\'mnwlhaeiou]/d" |
+sort -u

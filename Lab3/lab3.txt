@@ -1,0 +1,160 @@
+1) For the first portion of this lab we will need to get a copy of Coreutils 7.6
+from their website.
+
+wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-7.6.tar.gz
+
+2)We then extract the tar.gz file 
+
+tar -xzvf coreutils-7.6.tar.gz
+
+3)We will now want to enter the coreutils directory and and compile the base
+code to observe the error in ls for ourselves. We will also need to examine the
+INSTALL file to see how we might be able to change the installation path
+
+cd coreutils-7.6
+emacs INSTALL
+
+From examining the INSTALL file we note that by adding the --prefix= we can
+specify a path to where we want the installation directory to be. We run the
+configure command to have the system ensure all dependancies are avaliable and
+that all parameters are valid.
+
+./configure --prefix=~/CS35L/lab3/coreutils
+
+From running this command I recieve the error indicating it expected an
+absolute path. We will have to replace the environmental variable '~' with its
+absolute path equivalent
+
+./configure --prefix=/u/ee/ugrad/makarem/CS35L/lab3/coreutils
+
+From the current directory we will now finish compiling the program. The make
+command builds the program (compiles the code) from the source code making it
+fully executable and ready to run. The following command make install copies the
+built program, libraries, and documentation to the correct locations so that
+full integration is achieved. 
+
+make
+make install
+
+4) We will now attempt to run the buggy version. To reporduce the bug, we first
+need to change our local to "en_US.UTF-8"
+
+export LC_ALL='en_US.UTF-8'
+
+We will then need to navigate to the directory where the ls program lives
+
+cd ../coreutils/bin
+
+Then we will run the ls program found in this directory and not the native ls
+command
+
+./ls -l /bin/bash
+
+We can cofirm the bug as the result of this command gives us a date in the
+format "2017-02-15" instead of "Feb 15 2017"
+
+-rwxr-xr-x 1 root root 942200 2017-02-15 04:37 /bin/bash
+
+5) Now that we have confirmed the bug we will not attempt to apply Brady's patch
+to the ls program and recompile it to see if the patch works.
+
+6) We create a file called ls_fix.diff in the coreutils-7.6 directory and paste
+   Brady's patch into the file. I ran into a spacing issue in emacs so I used
+   nano to paste the patch in
+
+nano ls_fix.diff
+
+   To apply the patch we run the patch command,
+   stripping away the first slash(highest directory) to get the proper
+   directory. We do this because Brady's path has directory a/src and b/src,
+   since we are currently in the coreutils-7.6 folder that has the src
+   directory, we can strip away the a and be directory with "-p1" so that the
+   files are located in ./src or simply src
+
+patch -p1 <ls_fix.diff
+
+      When this is done we run the make command in the same directory. We do not
+      run the make install command because we want to have both versions of the
+      ls program for testing
+
+make
+
+7) We can now test the patch, I will first navigte back to the parent directory
+   which is lab3 in my home folder
+
+cd..
+
+	Then I setup a sample case for a new and old file (older than 1 year)
+
+touch -t 1503201000 old_file
+touch new_file
+
+      We then run the old unpatched version
+
+./coreutils/bin/ls -l
+
+-rw-r--r--  1 makarem eeugrad        0 2018-01-28 17:10 new_file
+-rw-r--r--  1 makarem eeugrad        0 2015-03-20 10:00 old_file
+
+     We then run the new patched version to ensure the patch worked
+
+./coreutils-7.6/src/ls -l
+
+-rw-r--r--  1 makarem eeugrad        0 Jan 28 17:10 new_file
+-rw-r--r--  1 makarem eeugrad        0 Mar 20  2015 old_file
+
+=============================================================
+JUST IN CASE
+============================================================
+make  all-recursive
+make[1]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6'
+Making all in lib
+make[2]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/lib'
+make  all-recursive
+make[3]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/lib'
+make[4]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/lib'
+make[4]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/lib'
+make[3]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/lib'
+make[2]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/lib'
+Making all in src
+make[2]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/src'
+make  all-am
+make[3]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/src'
+  CC     ls.o
+  CCLD   dir
+  CCLD   vdir
+  CCLD   ls
+make[3]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/src'
+make[2]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/src'
+Making all in doc
+make[2]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/doc'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/doc'
+Making all in man
+make[2]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/man'
+  GEN    dir.1
+  GEN    vdir.1
+  GEN    ls.1
+make[2]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/man'
+Making all in po
+make[2]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/po'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/po'
+Making all in tests
+make[2]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/tests'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/tests'
+Making all in gnulib-tests
+make[2]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/gnulib-tests'
+make  all-recursive
+make[3]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/gnulib-tests'
+make[4]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/gnulib-tests'
+make[4]: Nothing to be done for 'all-am'.
+make[4]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/gnulib-tests'
+make[3]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/gnulib-tests'
+make[2]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6/gnulib-tests'
+make[2]: Entering directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6'
+make[2]: Nothing to be done for 'all-am'.
+make[2]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6'
+make[1]: Leaving directory '/w/home.03/ee/ugrad/makarem/CS35L/lab3/coreutils-7.6'
+

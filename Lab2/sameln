@@ -1,0 +1,40 @@
+#!/bin/sh
+
+directory=$1
+IFS=$'\t'
+LC_COLLATE='C'
+
+declare -a FILES
+objects=$(ls $directory)
+hidden=$(ls -a -- $directory | grep '^\.')
+objects="${hidden}"$'\n'"${objects}"
+
+IFS=$'\n'
+files=''
+
+for object in $objects
+do
+    if [ ! -r "$directory/$object" ]
+    then
+	echo "$directory/$object is not readable"
+    elif [ -f "$directory/$object" ]
+    then
+	 files="${files}"$'\n'"${directory}"/"${object}"
+	 let count+=1
+    fi
+done
+set -f
+for filei in $files
+do
+    for filej in $files
+    do
+	cmp -s -- "$filei" "$filej"
+	if [ $? -eq 0 ] && [ ! "$filei" -ef "$filej" ]  
+	then
+	     ln -f -- "$filei" "$filej"
+	fi
+    done
+done
+set +f
+unset IFS
+

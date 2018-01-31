@@ -1,0 +1,183 @@
+LAB 2
+
+1)  First thing that must be done when setting up this lab is to ensure that the
+locale is utalizing the correct sorting algorithm. To do so we run the following
+command.
+
+export LC_ALL='C'
+
+2)     Next we need to create a file that will be used to make an english
+dictionary. The words we are looking for are found in the /usr/share/dict/words
+directory. What we will need to do however is sort this list, which can be done
+with the following command that also esports the list to a file called words.
+
+sort -u -o words /usr/share/dict/words
+
+3)   We will now be modifying the html page of our assignment. We can pull the
+file from the class website with the following command.
+
+ wget http://web.cs.ucla.edu/classes/winter18/cs35L/assign/assign2.html
+
+4a)    we will now run the commands listed on the assignment in the Laboratory
+section.
+
+tr -c 'A-Za-z' '[\n*]' < assign2.html
+
+This command finds the converse of the pattern, which in this case is all upper
+and lower case letters (alpha characters) and replaces each non-alpha character
+with a new line
+
+4b)  tr -cs 'A-Za-z' '[\n*]' < assign2.html
+
+This command does the same thing as the above command however, if through
+replacement there ends up being multiple new line characters being replaced
+sequentially (for example:@#$ => \n\n\n), then only one instance of the
+replacement charcater will be inserted. The function squeezes (-s) the result
+and has a result of putting each word on a new line, with no leftover lines
+
+4c)     tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort
+
+This command does the same as the previous command however this time the results
+are sorted according to the ASCII standard.
+
+4d)     tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u
+
+The addition of the -u flag results in the sort command only returning a list of
+unique values (per line) thus any duplicated words in the list are removed
+
+4e)     tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u | comm - words
+
+When we add a pipe to the comm command we get a table for comarison between two
+files. In this case the comm command takes stdin (-) which is the unique sorted
+list and compares that to the words file generated in step 2. The result is a 3
+column output where the first column has words unique to the stdin (unique
+sorted list), the second column has words unique to the words file, and the
+third column has words common to both stdin and words file.
+
+4f)    tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u | comm -23 - words
+
+This command is very similar to the above command, however columns 2 and 3 of
+the comparison result are suppressed resulting in a return value of only words
+unique to the sorted list from the assign2.html.
+
+5) We will now download the Haiwaiian to English dictionary webpage to get a
+list of Hawaiian words.
+
+wget http://mauimapp.com/moolelo/hwnwdseng.htm
+
+6) Next we will construct the buildwords script
+Note: the actual buildwords script does not have these comments.
+
+
+#!/bin/bash
+
+#Since the Hawaiian words are stored in a table on the HTML page we will
+#attempt to extract the content between the table tags and discard the rest
+
+     sed -n '/<table/,/<\/table>/p' |
+
+
+#Next we will need to toss out the english words, rather than process them
+#as Hawaiian words, it would be simpler to simply eliminate them from the start
+#We do this by removing the section from the start of the new row tag to the
+#close of the first column tag (since the english word is in the first column)   
+
+     sed '/<tr>/,/<\/td>/d' |
+
+
+#We will now do a series of replacements that will first remove all remaining
+#HTML tags from the file. Then since HTML tags had indentation and leading
+#whitespace, we will extract only the leading whitespace, any trailing
+#whitespace per piazza is to result in a rejection of the word, finally we
+#replace a comma space combo with a new line as this denotes a new word
+#Per piazza, a space does not denote a new word.   
+
+     sed 's/<[^>]*>//g;s/^[ \n]*//g;s/, /\n/g' |
+
+
+#Next we will clean up the formating of new lines and extra commas by replacing
+#all new lines, sequential new lines and commas with a squeezed new line.
+#this results in a new hawaiian word per new line, with no extra empty lines
+
+     tr -s '\r\n,' '\n' |
+
+
+#Now we will apply the applicable character corrections by replacing upper case
+#letters and the grave (`) with lowercase letters and the apostrophe ('),
+# respectively
+
+     tr "[:upper:]\`" "[:lower:]\'" |
+
+
+#We will now reject every word that does not abide by the Hawaiian alphabet
+#any word that has a character not on the approved list below is rejected
+#Per piazza words with spaces (middle or trailing) are to be rejected
+
+     sed  "/[^pk\'mnwlhaeiou]/d" |
+
+
+#Finally we organize the list of words into a unique sorted list
+
+      sort -u
+
+7)    We will now need to make this script executable
+
+chmod +x buildwords
+
+8)    Then we will make a Hawaiian dictionary file
+
+cat hwnwdseng.htm | ./buildwords > hwords
+
+9) We will now check the spelling of the assign2.html for both Hawaiian and
+English words
+
+9a) We will make use of the command in section 4f and pipe it to our text
+processing tool wc that will allow us to see how many words are in the returned
+list, which is essentially the list and count of misspelled english words.
+
+cat assign2.html | tr -cs 'A-Za-z' '[\n*]' | sort -u | comm -23 - words | wc
+
+There are thus 80 misspelled English words (81 if we include a word composed of
+all whitespace)
+
+9b) For the misspelled hawaiian words, we will utalize a very similar command
+where we remove non-hawaiian characters, make all remaining characters
+lowercase, and then compare them to the hwords file
+
+cat assign2.html | tr -cs "pk\'mnwlhaeiou" '[\n*]' | tr '[:upper:]' '[:lower:]'
+| sort -u | comm -23 - hwords | wc
+
+There are thusly 204 misspelled Hawaiian words
+
+9c) Now in order to compute if any words are misspelled in one language but not
+the other we will need to save the output of the previous 2 commands and use
+those resulting files with the comm command.
+
+cat assign2.html | tr -cs 'A-Za-z' '[\n*]' | tr '[:upper:]' '[:lower:]' | sort
+-u | comm -23 - words > emiss.txt
+
+cat assign2.html | tr -cs "pk\'mnwlhaeiou" '[\n*]' | tr '[:upper:]' '[:lower:]'
+| sort -u | comm -23 - hwords > hmiss.txt
+
+comm -23 emiss.txt hmiss.txt
+
+Words misspelled as English but not Hawaiian:
+
+halau
+wiki
+
+
+comm -13 emiss.txt hmiss.txt
+
+Words misspelled as Hawaiian but not English:
+
+houl
+keep
+mail
+open
+who
+
+
+
+
+
